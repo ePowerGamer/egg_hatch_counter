@@ -4,8 +4,9 @@ import time
 import tkinter as tk
 
 
+# TODO User set haystack location
 class Application(tk.Frame):
-    
+
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
@@ -68,7 +69,7 @@ class Application(tk.Frame):
 
         self.set_haystack_btn = tk.Button(self)
         self.set_haystack_btn['text'] = 'Set'
-        #self.set_hatstack_btn['command'] = self.set_haystack
+        self.set_haystack_btn['command'] = self.set_haystack
         self.set_haystack_btn.pack(side='bottom')
 
         self.cursor_location = tk.Label(self)
@@ -76,8 +77,8 @@ class Application(tk.Frame):
         self.cursor_location.pack(side="bottom")
 
         # Frame for coordinate input #
-        self.x_upper_Left = tk.Entry(self.right)
-        self.x_upper_Left.pack(side="top")
+        self.upper_left = tk.Entry(self.right)
+        self.upper_left.pack(side="top")
         
         self.upper_label = tk.Label(self.test)
         self.upper_label['text'] = "Upper left (x,y): "
@@ -136,6 +137,9 @@ class Application(tk.Frame):
         self.hatches += x
         self.hatch_label['text'] = "Hatches: {0}".format(self.hatches)
 
+    def set_haystack(self):
+        x1, y1 = eval(self.upper_left['text'])
+        print(x1)
 
 root = tk.Tk()
 app = Application(master=root)
