@@ -11,10 +11,15 @@ class Application(tk.Frame):
         self.master = master
         self.pack()
         self.create_widgets()
-        self.ref = open('C:\\Users\\Christopher\\Documents\\ShareX\\Screenshots\\2020-02\\tray.png')
+
+        #self.ref = open('C:\\Users\\Christopher\\Documents\\ShareX\\Screenshots\\2020-02\\tray.png')
         self.ref_path = 'C:\\Users\\Christopher\\Documents\\ShareX\\Screenshots\\2020-02\\tray.png'
         self.hatches = 0
         self.state = 0
+        self.origin_x = 0
+        self.origin_y = 0
+        self.haystack_width = 0
+        self.haystack_height = 0
 
     def create_widgets(self):
 
@@ -68,7 +73,7 @@ class Application(tk.Frame):
 
         self.set_haystack_btn = tk.Button(self)
         self.set_haystack_btn['text'] = 'Set'
-        #self.set_hatstack_btn['command'] = self.set_haystack
+        self.set_haystack_btn['command'] = self.set_haystack
         self.set_haystack_btn.pack(side='bottom')
 
         self.cursor_location = tk.Label(self)
@@ -76,8 +81,8 @@ class Application(tk.Frame):
         self.cursor_location.pack(side="bottom")
 
         # Frame for coordinate input #
-        self.x_upper_Left = tk.Entry(self.right)
-        self.x_upper_Left.pack(side="top")
+        self.upper_left = tk.Entry(self.right)
+        self.upper_left.pack(side="top")
         
         self.upper_label = tk.Label(self.test)
         self.upper_label['text'] = "Upper left (x,y): "
@@ -92,7 +97,7 @@ class Application(tk.Frame):
 
     def run_egg_counter(self):
         if(self.state == 0):
-            print("Starting at: " + datetime.datetime.now())
+            print("Starting at: " + str(datetime.datetime.now()))
             print("Hatches: " + str(self.hatches))
             self.state = 1
             self.check_for_egg()
@@ -107,8 +112,14 @@ class Application(tk.Frame):
         if (self.state == 1):
 
             x = time.time()
-            haystack = pyautogui.screenshot(region=(700,500,400,400));
-            egg = pyautogui.locate('C:\\Users\\Christopher\\Documents\\ShareX\\Screenshots\\2020-02\\tray.png', haystack, confidence=.9)
+            haystack = pyautogui.screenshot(region=(self.origin_x, self.origin_y, self.haystack_width, self.haystack_height))
+            egg = None
+            try:
+                egg = pyautogui.locate('tray.png', haystack, confidence=.9)
+            except(ValueError):
+                print("Needle is larger than the haystack!")
+                self.state = 0
+                return
             y = time.time()
             print(y-x)
 
@@ -135,6 +146,25 @@ class Application(tk.Frame):
     def add_x_hatch(self, x):
         self.hatches += x
         self.hatch_label['text'] = "Hatches: {0}".format(self.hatches)
+
+    def set_haystack(self):
+        try:
+            x1, y1 = eval(self.upper_left.get())
+            x2, y2 = eval(self.bottom_right.get())
+
+            self.origin_x = x1
+            self.origin_y = y1
+            self.haystack_height = y2 - y1
+            self.haystack_width = x2 - x1
+
+        except(ValueError) as e:
+            print(e)
+        except(NameError):
+            print("No characters should be inputted.")
+        except(TypeError):
+            print("Enter TWO numbers for the x and y value.")
+        except(SyntaxError):
+            print("No entry detected.")
 
 
 root = tk.Tk()
