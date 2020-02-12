@@ -2,6 +2,7 @@ import pyautogui
 import datetime
 import time
 import tkinter as tk
+import os
 
 
 #TODO load/save settings, status messages
@@ -14,17 +15,15 @@ class Application(tk.Frame):
         self.pack()
         self.create_widgets()
 
-        #self.ref = open('C:\\Users\\Christopher\\Documents\\ShareX\\Screenshots\\2020-02\\tray.png')
         self.ref_path = 'C:\\Users\\Christopher\\Documents\\ShareX\\Screenshots\\2020-02\\tray.png'
         self.hatches = 0
         self.state = 0
         self.origin_x = 0
         self.origin_y = 0
-        self.haystack_width = 0
-        self.haystack_height = 0
+        self.haystack_width = 1920
+        self.haystack_height = 1080
 
     def create_widgets(self):
-
         # Frame for Start/Stopping #
 
         self.controls_frame = tk.Frame(self)
@@ -70,8 +69,16 @@ class Application(tk.Frame):
         self.right = tk.Frame(self.coord_frame)
         self.right.pack(side="right")
 
-        self.quit = tk.Button(self, text="QUIT", fg="red", command=self.master.destroy)
-        self.quit.pack(side="bottom", anchor='e')
+        # Save/load/quit frame #
+        self.file_control_frame = tk.Frame(self)
+        self.file_control_frame.pack(side='bottom', fill='x')
+
+        self.save_btn = tk.Button(self.file_control_frame, text='SAVE')
+        self.load_btn = tk.Button(self.file_control_frame, text='LOAD')
+        self.quit_btn = tk.Button(self.file_control_frame, text="QUIT", fg="red", command=self.master.destroy)
+        self.save_btn.pack(side='left')
+        self.load_btn.pack(side='left')
+        self.quit_btn.pack(side="right", anchor='e')
 
         self.set_haystack_btn = tk.Button(self)
         self.set_haystack_btn['text'] = 'Set'
@@ -117,7 +124,7 @@ class Application(tk.Frame):
             haystack = pyautogui.screenshot(region=(self.origin_x, self.origin_y, self.haystack_width, self.haystack_height))
             egg = None
             try:
-                egg = pyautogui.locate('tray.png', haystack, confidence=.9)
+                egg = pyautogui.locate('logo.png', haystack, confidence=.9)
             except(ValueError):
                 print("Needle is larger than the haystack!")
                 self.state = 0
@@ -128,7 +135,7 @@ class Application(tk.Frame):
             if(egg is not None):
                 self.hatches += 1
                 self.hatch_label['text'] = "Hatches: {0}".format(self.hatches)
-                print("Hatch #: {0} Hatch time: {1}".format(self.hatches, datetime.datetime.now()))
+                print("Hatch #: {0} | Hatch time: {1}".format(self.hatches, datetime.datetime.now()))
                 app.after(8000, self.check_for_egg)
             else:
                 app.after(2000, self.check_for_egg)
@@ -167,6 +174,10 @@ class Application(tk.Frame):
             print("Enter TWO numbers for the x and y value.")
         except(SyntaxError):
             print("No entry detected.")
+
+    def save(self):
+        #file = open('data.cfg')
+        return
 
 
 root = tk.Tk()
