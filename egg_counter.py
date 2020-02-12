@@ -4,18 +4,24 @@ import time
 import tkinter as tk
 
 
-# TODO User set haystack location
-class Application(tk.Frame):
+#TODO load/save settings, status messages
 
+class Application(tk.Frame):
+    
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
         self.pack()
         self.create_widgets()
-        self.ref = open('C:\\Users\\Christopher\\Documents\\ShareX\\Screenshots\\2020-02\\tray.png')
+
+        #self.ref = open('C:\\Users\\Christopher\\Documents\\ShareX\\Screenshots\\2020-02\\tray.png')
         self.ref_path = 'C:\\Users\\Christopher\\Documents\\ShareX\\Screenshots\\2020-02\\tray.png'
         self.hatches = 0
         self.state = 0
+        self.origin_x = 0
+        self.origin_y = 0
+        self.haystack_width = 0
+        self.haystack_height = 0
 
     def create_widgets(self):
 
@@ -93,7 +99,7 @@ class Application(tk.Frame):
 
     def run_egg_counter(self):
         if(self.state == 0):
-            print("Starting at: " + datetime.datetime.now())
+            print("Starting at: " + str(datetime.datetime.now()))
             print("Hatches: " + str(self.hatches))
             self.state = 1
             self.check_for_egg()
@@ -108,15 +114,21 @@ class Application(tk.Frame):
         if (self.state == 1):
 
             x = time.time()
-            haystack = pyautogui.screenshot(region=(700,500,400,400));
-            egg = pyautogui.locate('C:\\Users\\Christopher\\Documents\\ShareX\\Screenshots\\2020-02\\tray.png', haystack, confidence=.9)
+            haystack = pyautogui.screenshot(region=(self.origin_x, self.origin_y, self.haystack_width, self.haystack_height))
+            egg = None
+            try:
+                egg = pyautogui.locate('tray.png', haystack, confidence=.9)
+            except(ValueError):
+                print("Needle is larger than the haystack!")
+                self.state = 0
+                return
             y = time.time()
             print(y-x)
 
             if(egg is not None):
                 self.hatches += 1
                 self.hatch_label['text'] = "Hatches: {0}".format(self.hatches)
-                print("Hatches: {0} Last hatch: {1}".format(self.hatches, datetime.datetime.now()))
+                print("Hatch #: {0} Hatch time: {1}".format(self.hatches, datetime.datetime.now()))
                 app.after(8000, self.check_for_egg)
             else:
                 app.after(2000, self.check_for_egg)
@@ -138,8 +150,24 @@ class Application(tk.Frame):
         self.hatch_label['text'] = "Hatches: {0}".format(self.hatches)
 
     def set_haystack(self):
-        x1, y1 = eval(self.upper_left['text'])
-        print(x1)
+        try:
+            x1, y1 = eval(self.upper_left.get())
+            x2, y2 = eval(self.bottom_right.get())
+
+            self.origin_x = x1
+            self.origin_y = y1
+            self.haystack_height = y2 - y1
+            self.haystack_width = x2 - x1
+
+        except(ValueError) as e:
+            print(e)
+        except(NameError):
+            print("No characters should be inputted.")
+        except(TypeError):
+            print("Enter TWO numbers for the x and y value.")
+        except(SyntaxError):
+            print("No entry detected.")
+
 
 root = tk.Tk()
 app = Application(master=root)
