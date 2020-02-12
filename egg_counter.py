@@ -4,6 +4,8 @@ import time
 import tkinter as tk
 
 
+#TODO load/save settings, status messages
+
 class Application(tk.Frame):
     
     def __init__(self, master=None):
@@ -126,7 +128,7 @@ class Application(tk.Frame):
             if(egg is not None):
                 self.hatches += 1
                 self.hatch_label['text'] = "Hatches: {0}".format(self.hatches)
-                print("Hatches: {0} Last hatch: {1}".format(self.hatches, datetime.datetime.now()))
+                print("Hatch #: {0} Hatch time: {1}".format(self.hatches, datetime.datetime.now()))
                 app.after(8000, self.check_for_egg)
             else:
                 app.after(2000, self.check_for_egg)
