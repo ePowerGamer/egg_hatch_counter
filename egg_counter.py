@@ -10,11 +10,6 @@ import os
 class Application(tk.Frame):
     
     def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.pack()
-        self.create_widgets()
-
         self.ref_path = 'C:\\Users\\Christopher\\Documents\\ShareX\\Screenshots\\2020-02\\tray.png'
         self.hatches = 0
         self.state = 0
@@ -22,6 +17,11 @@ class Application(tk.Frame):
         self.origin_y = 0
         self.haystack_width = 1920
         self.haystack_height = 1080
+
+        super().__init__(master)
+        self.master = master
+        self.pack()
+        self.create_widgets()
 
     def create_widgets(self):
         # Frame for Start/Stopping #
@@ -73,7 +73,7 @@ class Application(tk.Frame):
         self.file_control_frame = tk.Frame(self)
         self.file_control_frame.pack(side='bottom', fill='x')
 
-        self.save_btn = tk.Button(self.file_control_frame, text='SAVE')
+        self.save_btn = tk.Button(self.file_control_frame, text='SAVE', command=self.save)
         self.load_btn = tk.Button(self.file_control_frame, text='LOAD')
         self.quit_btn = tk.Button(self.file_control_frame, text="QUIT", fg="red", command=self.master.destroy)
         self.save_btn.pack(side='left')
@@ -90,12 +90,13 @@ class Application(tk.Frame):
         self.cursor_location.pack(side="bottom")
 
         # Frame for coordinate input #
-        self.upper_left = tk.Entry(self.right)
-        self.upper_left.pack(side="top")
+        self.origin = tk.Entry(self.right)
+        self.origin.pack(side="top")
+        self.origin.insert(0, "{0}, {1}".format(self.origin_x, self.origin_y))
         
-        self.upper_label = tk.Label(self.test)
-        self.upper_label['text'] = "Upper left (x,y): "
-        self.upper_label.pack(side="top")
+        self.origin_label = tk.Label(self.test)
+        self.origin_label['text'] = "Upper left (x,y): "
+        self.origin_label.pack(side="top")
 
         self.bottom_label = tk.Label(self.test)
         self.bottom_label['text'] = "Bottom right (x,y): "
@@ -103,6 +104,7 @@ class Application(tk.Frame):
 
         self.bottom_right = tk.Entry(self.right)
         self.bottom_right.pack(side="bottom")
+        self.bottom_right.insert(0, "{0}, {1}".format(self.haystack_width, self.haystack_height))
 
     def run_egg_counter(self):
         if(self.state == 0):
@@ -158,7 +160,7 @@ class Application(tk.Frame):
 
     def set_haystack(self):
         try:
-            x1, y1 = eval(self.upper_left.get())
+            x1, y1 = eval(self.origin.get())
             x2, y2 = eval(self.bottom_right.get())
 
             self.origin_x = x1
@@ -176,7 +178,13 @@ class Application(tk.Frame):
             print("No entry detected.")
 
     def save(self):
-        #file = open('data.cfg')
+        file = open('data.cfg', 'w')
+        file.write("origin x: {0}\n".format(self.origin_x))
+        file.write("origin y: {0}\n".format(self.origin_y))
+        file.write("haystack width: {0}\n".format(self.haystack_width))
+        file.write("haystack height: {0}\n".format(self.haystack_height))
+        file.close()
+        print("saved")
         return
 
 
