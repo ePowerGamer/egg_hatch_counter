@@ -74,7 +74,7 @@ class Application(tk.Frame):
         self.file_control_frame.pack(side='bottom', fill='x')
 
         self.save_btn = tk.Button(self.file_control_frame, text='SAVE', command=self.save)
-        self.load_btn = tk.Button(self.file_control_frame, text='LOAD')
+        self.load_btn = tk.Button(self.file_control_frame, text='LOAD', command=self.load)
         self.quit_btn = tk.Button(self.file_control_frame, text="QUIT", fg="red", command=self.master.destroy)
         self.save_btn.pack(side='left')
         self.load_btn.pack(side='left')
@@ -187,6 +187,9 @@ class Application(tk.Frame):
         print("saved")
         return
 
+    def load(self):
+        file = open('data.cfg', 'r')
+        self.origin.insert(0, file.readline().split(':')[1])
 
 root = tk.Tk()
 app = Application(master=root)
