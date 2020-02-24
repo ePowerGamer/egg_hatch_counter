@@ -90,7 +90,8 @@ class Application(tk.Frame):
         self.cursor_location.pack(side="bottom")
 
         # Frame for coordinate input #
-        self.origin = tk.Entry(self.right)
+        self.origin_txt = tk.StringVar()
+        self.origin = tk.Entry(self.right, textvariable=self.origin_txt)
         self.origin.pack(side="top")
         self.origin.insert(0, "{0}, {1}".format(self.origin_x, self.origin_y))
         
@@ -189,7 +190,9 @@ class Application(tk.Frame):
 
     def load(self):
         file = open('data.cfg', 'r')
-        self.origin.insert(0, file.readline().split(':')[1])
+        self.origin_txt.set("{0}, {1}".format(file.readline().split(':')[1].strip(), file.readline().split(':')[1].strip()))
+
+        file.close()
 
 root = tk.Tk()
 app = Application(master=root)
