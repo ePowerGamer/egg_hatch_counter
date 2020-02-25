@@ -2,6 +2,7 @@ import pyautogui
 import datetime
 import time
 import tkinter as tk
+import config_handler
 import os
 
 
@@ -189,8 +190,12 @@ class Application(tk.Frame):
         return
 
     def load(self):
+        # print(config_handler.load(self)[1])
         file = open('data.cfg', 'r')
-        self.origin_txt.set("{0}, {1}".format(file.readline().split(':')[1].strip(), file.readline().split(':')[1].strip()))
+        self.origin_x = file.readline().split(':')[1].strip()
+        self.origin_y = file.readline().split(':')[1].strip()
+        config_handler.load(self)
+        self.origin_txt.set("{0}, {1}".format(self.origin_x, self.origin_y))
 
         file.close()
 
