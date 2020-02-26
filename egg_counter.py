@@ -92,9 +92,9 @@ class Application(tk.Frame):
 
         # Frame for coordinate input #
         self.origin_txt = tk.StringVar()
-        self.origin = tk.Entry(self.right, textvariable=self.origin_txt)
-        self.origin.pack(side="top")
-        self.origin.insert(0, "{0}, {1}".format(self.origin_x, self.origin_y))
+        self.origin_entry = tk.Entry(self.right, textvariable=self.origin_txt)
+        self.origin_entry.pack(side="top")
+        self.origin_entry.insert(0, "{0}, {1}".format(self.origin_x, self.origin_y))
         
         self.origin_label = tk.Label(self.test)
         self.origin_label['text'] = "Upper left (x,y): "
@@ -104,7 +104,8 @@ class Application(tk.Frame):
         self.bottom_label['text'] = "Bottom right (x,y): "
         self.bottom_label.pack(side="bottom")
 
-        self.bottom_right = tk.Entry(self.right)
+        self.bottom_right_txt = tk.StringVar()
+        self.bottom_right = tk.Entry(self.right, textvariable=self.bottom_right_txt)
         self.bottom_right.pack(side="bottom")
         self.bottom_right.insert(0, "{0}, {1}".format(self.haystack_width, self.haystack_height))
 
@@ -162,7 +163,7 @@ class Application(tk.Frame):
 
     def set_haystack(self):
         try:
-            x1, y1 = eval(self.origin.get())
+            x1, y1 = eval(self.origin_entry.get())
             x2, y2 = eval(self.bottom_right.get())
 
             self.origin_x = x1
@@ -180,24 +181,12 @@ class Application(tk.Frame):
             print("No entry detected.")
 
     def save(self):
-        file = open('data.cfg', 'w')
-        file.write("origin x: {0}\n".format(self.origin_x))
-        file.write("origin y: {0}\n".format(self.origin_y))
-        file.write("haystack width: {0}\n".format(self.haystack_width))
-        file.write("haystack height: {0}\n".format(self.haystack_height))
-        file.close()
-        print("saved")
+        config_handler.save(self)
         return
 
     def load(self):
-        # print(config_handler.load(self)[1])
-        file = open('data.cfg', 'r')
-        self.origin_x = file.readline().split(':')[1].strip()
-        self.origin_y = file.readline().split(':')[1].strip()
         config_handler.load(self)
-        self.origin_txt.set("{0}, {1}".format(self.origin_x, self.origin_y))
 
-        file.close()
 
 root = tk.Tk()
 app = Application(master=root)
